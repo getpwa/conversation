@@ -1693,6 +1693,8 @@ public class XmppConnection implements Runnable {
 		private boolean encryptionEnabled = false;
 		private boolean blockListRequested = false;
 
+		public String http_upload_namespace = Namespace.HTTP_UPLOAD;
+
 		public Features(final XmppConnection connection) {
 			this.connection = connection;
 		}
@@ -1782,10 +1784,15 @@ public class XmppConnection implements Runnable {
 			if (Config.DISABLE_HTTP_UPLOAD) {
 				return false;
 			} else {
-				List<Entry<Jid, ServiceDiscoveryResult>> items = findDiscoItemsByFeature(Namespace.HTTP_UPLOAD);
+				List<Entry<Jid, ServiceDiscoveryResult>> items = findDiscoItemsByFeature(this.http_upload_namespace);
+				if (items.size() == 0) {
+					Log.d(Config.LOGTAG, account.getJid().toBareJid() + ": this server does not support the latest version of XEP-0363");
+					this.http_upload_namespace = Namespace.HTTP_UPLOAD_LEGACY;
+					items = findDiscoItemsByFeature(this.http_upload_namespace);
+				}
 				if (items.size() > 0) {
 					try {
-						long maxsize = Long.parseLong(items.get(0).getValue().getExtendedDiscoInformation(Namespace.HTTP_UPLOAD, "max-file-size"));
+						long maxsize = Long.parseLong(items.get(0).getValue().getExtendedDiscoInformation(this.http_upload_namespace, "max-file-size"));
 						if (filesize <= maxsize) {
 							return true;
 						} else {
@@ -1802,10 +1809,10 @@ public class XmppConnection implements Runnable {
 		}
 
 		public long getMaxHttpUploadSize() {
-			List<Entry<Jid, ServiceDiscoveryResult>> items = findDiscoItemsByFeature(Namespace.HTTP_UPLOAD);
+			List<Entry<Jid, ServiceDiscoveryResult>> items = findDiscoItemsByFeature(this.http_upload_namespace);
 			if (items.size() > 0) {
 				try {
-					return Long.parseLong(items.get(0).getValue().getExtendedDiscoInformation(Namespace.HTTP_UPLOAD, "max-file-size"));
+					return Long.parseLong(items.get(0).getValue().getExtendedDiscoInformation(this.http_upload_namespace, "max-file-size"));
 				} catch (Exception e) {
 					return -1;
 				}
