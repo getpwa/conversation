@@ -1,6 +1,6 @@
-<h1 align="center">Conversations</h1>
+<h1 align="center">Conversations Legacy</h1>
 
-<p align="center">Conversations: the very last word in instant messaging</p>
+<p align="center">Conversations Legacy: the second to last word in instant messaging</p>
 
 <p align="center">
     <a href="https://conversations.im/j/conversations@conference.siacs.eu">
