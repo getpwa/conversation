@@ -16,17 +16,6 @@
     </a>
 </p>
 
-<p align="center">
-    <a href="https://play.google.com/store/apps/details?id=eu.siacs.conversations&amp;referrer=utm_source%3Dgithub">
-       <img src="https://conversations.im/images/en-play-badge.png"
-            alt="Google Play">
-            </a>
-    <a href="http://www.amazon.com/dp/B00WD35AAC/">
-        <img src="https://images-na.ssl-images-amazon.com/images/G/01/AmazonMobileApps/amazon-apps-store-us-black.png"
-             alt="Amazon App Store">
-    </a>
-</p>
-
 ![screenshots](https://raw.githubusercontent.com/siacs/Conversations/master/screenshots.png)
 
 ## Design principles
@@ -86,19 +75,13 @@ run your own XMPP server for you and your friends. These XEP's are:
 
 ### General
 
-#### How do I install Conversations?
+#### How do I install Conversations Legacy?
 
-Conversations is entirely open source and licensed under GPLv3. So if you are a
+Conversations Legacy is entirely open source and licensed under GPLv3. So if you are a
 software developer you can check out the sources from GitHub and use Gradle to
 build your apk file.
 
-The more convenient way — which not only gives you automatic updates but also
-supports the further development of Conversations — is to buy the App in the
-Google [Play Store](https://play.google.com/store/apps/details?id=eu.siacs.conversations&referrer=utm_source%3Dgithub).
-
-Buying the App from the Play Store will also give you access to our [beta test](#beta).
-
-#### I don't have a Google Account but I would still like to make a contribution
+#### Donations
 
 I accept donations over PayPal, bank transfer and various crypto currencies. For donations via PayPal you
 can use the email address `donate@siacs.eu` or the button below.
