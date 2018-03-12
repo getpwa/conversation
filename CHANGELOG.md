@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 1.23.9
+* Bring back support for old HTTP Upload version
+* Changed branding to Conversations Legacy
+
 ### Version 1.23.8
 * bug fixes
 
