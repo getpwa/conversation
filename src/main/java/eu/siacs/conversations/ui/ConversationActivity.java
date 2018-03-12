@@ -182,6 +182,10 @@ public class ConversationActivity extends XmppActivity
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null) {
+			actionBar.setTitle(R.string.app_name_short);
+		}
 		new EmojiService(this).init();
 		if (savedInstanceState != null) {
 			mOpenConversation = savedInstanceState.getString(STATE_OPEN_CONVERSATION, null);
@@ -214,7 +218,6 @@ public class ConversationActivity extends XmppActivity
 		this.listView.setAdapter(this.listAdapter);
 		this.listView.setSwipeDirection(EnhancedListView.SwipeDirection.END);
 
-		final ActionBar actionBar = getActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
 		}
@@ -375,7 +378,7 @@ public class ConversationActivity extends XmppActivity
 				if ((ab.getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) == ActionBar.DISPLAY_HOME_AS_UP) {
 					ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
 				}
-				ab.setTitle(R.string.app_name);
+				ab.setTitle(R.string.app_name_short);
 			}
 		}
 	}
