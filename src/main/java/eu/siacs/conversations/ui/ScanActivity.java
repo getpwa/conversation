@@ -73,6 +73,7 @@ public final class ScanActivity extends Activity implements SurfaceTextureListen
 
 	private static final long VIBRATE_DURATION = 50L;
 	private static final long AUTO_FOCUS_INTERVAL_MS = 2500L;
+	private static final long EXPOSURE_COMPENSATION_INTERVAL = 250L;
 	private static boolean DISABLE_CONTINUOUS_AUTOFOCUS = Build.MODEL.equals("GT-I9100") // Galaxy S2
 			|| Build.MODEL.equals("SGH-T989") // Galaxy S2
 			|| Build.MODEL.equals("SGH-T989D") // Galaxy S2 X
@@ -95,7 +96,7 @@ public final class ScanActivity extends Activity implements SurfaceTextureListen
 	};
 	private final Runnable fetchAndDecodeRunnable = new Runnable() {
 		private final QRCodeReader reader = new QRCodeReader();
-		private final Map<DecodeHintType, Object> hints = new EnumMap<DecodeHintType, Object>(DecodeHintType.class);
+		private final Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
 
 		@Override
 		public void run() {
@@ -124,6 +125,8 @@ public final class ScanActivity extends Activity implements SurfaceTextureListen
 		public void run() {
 			try {
 				final Camera camera = cameraManager.open(previewView, displayRotation(), !DISABLE_CONTINUOUS_AUTOFOCUS);
+				Camera.Parameters parameters = camera.getParameters();
+				Log.d(Config.LOGTAG, "max exposure control: " + parameters.getMaxExposureCompensation() + " min:" + parameters.getMinExposureCompensation());
 
 				final Rect framingRect = cameraManager.getFrame();
 				final RectF framingRectInPreview = new RectF(cameraManager.getFramePreview());
@@ -137,8 +140,11 @@ public final class ScanActivity extends Activity implements SurfaceTextureListen
 				final boolean nonContinuousAutoFocus = Camera.Parameters.FOCUS_MODE_AUTO.equals(focusMode)
 						|| Camera.Parameters.FOCUS_MODE_MACRO.equals(focusMode);
 
-				if (nonContinuousAutoFocus)
+				if (nonContinuousAutoFocus) {
 					cameraHandler.post(new AutoFocusRunnable(camera));
+				}
+
+				cameraHandler.postDelayed(new ExposureControlRunnable(camera), EXPOSURE_COMPENSATION_INTERVAL);
 
 				cameraHandler.post(fetchAndDecodeRunnable);
 			} catch (final Exception x) {
@@ -314,6 +320,51 @@ public final class ScanActivity extends Activity implements SurfaceTextureListen
 			} catch (final Exception x) {
 				Log.d(Config.LOGTAG, "problem with auto-focus, will not schedule again", x);
 			}
+		}
+	}
+
+	private final class ExposureControlRunnable implements Runnable {
+		private final Camera camera;
+		private boolean up = false;
+
+		public ExposureControlRunnable(final Camera camera) {
+			this.camera = camera;
+		}
+
+		@Override
+		public void run() {
+			Camera.Parameters paramaters = camera.getParameters();
+			int min = paramaters.getMinExposureCompensation();
+			int max = paramaters.getMaxExposureCompensation();
+			int limit = Math.max(min, Math.min(0, max));
+			int steps = Math.abs(limit - min);
+			int current = paramaters.getExposureCompensation();
+			int next;
+			if (up) {
+				if (current < limit) {
+					next = current + 1;
+				} else {
+					up = false;
+					next = current - 1;
+				}
+			} else {
+				if (current > min) {
+					next = current - 1;
+				} else {
+					up = true;
+					next = current + 1;
+				}
+			}
+			Log.d(Config.LOGTAG, "exposure was " + current + " changing to " + next);
+			try {
+				paramaters.setExposureCompensation(next);
+				camera.setParameters(paramaters);
+			} catch (Exception e) {
+				Log.d(Config.LOGTAG, "unable to change exposure ", e);
+				return;
+			}
+			long nextIn = EXPOSURE_COMPENSATION_INTERVAL * 20 / steps;
+			cameraHandler.postDelayed(this, nextIn);
 		}
 	}
 }
