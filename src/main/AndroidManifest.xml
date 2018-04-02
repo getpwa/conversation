@@ -45,7 +45,7 @@
 
         <activity
             android:name=".ui.ConversationActivity"
-            android:label="@string/app_name_short"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:minWidth="300dp"
             android:minHeight="300dp"
